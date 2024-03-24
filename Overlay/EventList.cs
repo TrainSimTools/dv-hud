@@ -46,7 +46,7 @@ namespace DvMod.HeadsUpDisplay
             var locoDirection = PlayerManager.LastLoco == null || PlayerManager.LastLoco.GetComponent<SimController>()?.controlsOverrider.Reverser.Value >= 0.5f;
             var direction = !locoDirection ^ (bogie.TrackDirectionSign > 0);
             var currentGrade = TrackIndexer.Grade(bogie.point1) * (direction ? 1 : -1);
-            
+
             var events = TrackFollower.FollowTrack(
                 track,
                 startSpan,
