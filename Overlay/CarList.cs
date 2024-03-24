@@ -306,11 +306,12 @@ namespace DvMod.HeadsUpDisplay
         private const float HueOrange = 30f / 360f;
         private static Color GetCarColor(TrainCar car)
         {
+            if (car == null)
+                return Color.white;
             if (car.derailed)
                 return Color.red;
             if (!car.IsLoco)
                 return Color.white;
-
             var isMultipleUnitCapable = car.TryGetComponent<MultipleUnitModule>(out var muModule);
             var frontMUDisconnected = isMultipleUnitCapable
                 && car.frontCoupler.coupledTo?.train?.carType == car.carType
@@ -320,7 +321,7 @@ namespace DvMod.HeadsUpDisplay
                 && !muModule.RearCable.IsConnected;
             var hasDisconnectedMUCable = frontMUDisconnected || rearMUDisconnected;
 
-            var isRunning = car.GetComponent<SimController>()?.controlsOverrider.EngineOnReader.IsOn ?? true;
+            var isRunning = car.GetComponent<SimController>()?.controlsOverrider?.EngineOnReader?.IsOn ?? true;
 
             return Color.HSVToRGB(HueOrange, hasDisconnectedMUCable ? 1 : 0, isRunning ? 1 : 0.8f);
         }
