@@ -22,7 +22,7 @@ namespace DvMod.HeadsUpDisplay
 
         private static string GetSpeedLimitEventDescription(SpeedLimitEvent e)
         {
-            var currentSpeed = Mathf.Abs(PlayerManager.Car.GetForwardSpeed() * 3.6f);
+            var currentSpeed = PlayerManager.Car.GetAbsSpeed() * 3.6f;
             var color = "white";
             if (currentSpeed > e.limit + 5f)
                 color = e.span < 500f ? "red" : e.span < 1000f ? "orange" : "yellow";
@@ -46,7 +46,7 @@ namespace DvMod.HeadsUpDisplay
             var locoDirection = PlayerManager.LastLoco == null || PlayerManager.LastLoco.GetComponent<SimController>()?.controlsOverrider.Reverser.Value >= 0.5f;
             var direction = !locoDirection ^ (bogie.TrackDirectionSign > 0);
             var currentGrade = TrackIndexer.Grade(bogie.point1) * (direction ? 1 : -1);
-
+            
             var events = TrackFollower.FollowTrack(
                 track,
                 startSpan,
