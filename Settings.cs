@@ -256,6 +256,7 @@ namespace DvMod.HeadsUpDisplay
             [Draw("Group by job", VisibleOn = "showCarList|true")] public bool groupCarsByJob = true;
             [Draw("Stress", VisibleOn = "showCarList|true")] public bool showCarStress = true;
             [Draw("Job ID", VisibleOn = "showCarList|true")] public bool showCarJobs = true;
+            [Draw("Job TimeRemaining", VisibleOn = "showCarJobs|true")] public bool showCarJobsTimeRemaining = true;
             [Draw("Destination", VisibleOn = "showCarList|true")] public bool showCarDestinations = true;
             [Draw("Brake status", VisibleOn = "showCarList|true")] public bool showCarBrakeStatus = true;
         }

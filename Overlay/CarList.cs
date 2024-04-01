@@ -295,6 +295,8 @@ namespace DvMod.HeadsUpDisplay
                 DrawCouplerStress(groups);
             if (trainInfoSettings.showCarJobs)
                 DrawCarJobs(groups);
+            if (trainInfoSettings.showCarJobsTimeRemaining)
+                DrawCarJobsTimeRemaining(groups);
             if (trainInfoSettings.showCarDestinations)
                 DrawCarDestinations(groups);
             if (trainInfoSettings.showCarBrakeStatus)
@@ -389,6 +391,29 @@ namespace DvMod.HeadsUpDisplay
             {
                 GUI.contentColor = JobColor(group.job);
                 GUILayout.Label(group.job?.ID ?? " ", Styles.noWrap);
+            }
+            GUI.contentColor = Color.white;
+            GUILayout.EndVertical();
+        }
+        private static void DrawCarJobsTimeRemaining(IEnumerable<CarGroup> groups)
+        {
+            GUILayout.Space(Overlay.ColumnSpacing);
+            GUILayout.BeginVertical();
+            GUILayout.Label("Time Left", Styles.noWrap);
+            foreach (CarGroup group in groups)
+            {
+                if (group.job != null && group.job.State == JobState.InProgress)
+                {
+                    double totalMinutes = TimeSpan.FromSeconds(group.job.TimeLimit - group.job.GetTimeOnJob()).TotalMinutes;
+
+                    GUI.contentColor = totalMinutes > 5 ? Color.white : totalMinutes > 1 ? Color.yellow : Color.red;
+
+                    GUILayout.Label($"{(int)totalMinutes}:{Math.Floor((totalMinutes%1)*60):00}", Styles.rightAlign);
+                }
+                else
+                {
+                    GUILayout.Label(" ", Styles.noWrap);
+                }
             }
             GUI.contentColor = Color.white;
             GUILayout.EndVertical();
