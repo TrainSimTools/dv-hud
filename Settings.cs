@@ -271,6 +271,7 @@ namespace DvMod.HeadsUpDisplay
         [Draw("Train info", Collapsible = true, Box = true)]
         public TrainInfoSettings trainInfoSettings = new TrainInfoSettings();
 
+        [Draw("Enable Job list")] public bool drawJobList;
         [Draw("Enable logging")] public bool enableLogging;
         [Draw("Lock position")] public bool lockPosition;
 

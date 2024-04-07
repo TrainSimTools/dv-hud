@@ -128,6 +128,9 @@ namespace DvMod.HeadsUpDisplay
             if (Main.settings.trainInfoSettings.enabled)
                 DrawTrainInfo();
 
+            if (Main.settings.drawJobList)
+                DrawJobList();
+
             GUILayout.EndVertical();
 
             if (!Main.settings.lockPosition)
@@ -184,7 +187,6 @@ namespace DvMod.HeadsUpDisplay
                         return $"{trainset.OverallLength():F0} m";
                 }
             }
-
             GUILayout.BeginVertical("box");
 
             if (Main.settings.trainInfoSettings.showTrainInfo)
@@ -203,6 +205,13 @@ namespace DvMod.HeadsUpDisplay
             if (Main.settings.trainInfoSettings.showCarList)
                 CarList.DrawCarList(trainset);
 
+            GUILayout.EndVertical();
+        }
+
+        private void DrawJobList()
+        {
+            GUILayout.BeginVertical("box");
+            JobList.DrawJobList();
             GUILayout.EndVertical();
         }
     }

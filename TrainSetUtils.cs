@@ -1,4 +1,3 @@
-using DV.Logic.Job;
 using System.Linq;
 
 namespace DvMod.HeadsUpDisplay
