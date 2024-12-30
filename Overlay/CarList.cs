@@ -408,7 +408,8 @@ namespace DvMod.HeadsUpDisplay
 
                     GUI.contentColor = totalMinutes > 5 ? Color.white : totalMinutes > 1 ? Color.yellow : Color.red;
 
-                    GUILayout.Label($"{(int)totalMinutes}:{Math.Floor((totalMinutes%1)*60):00}", Styles.rightAlign);
+                    var absMinutes = Math.Abs(totalMinutes);
+                    GUILayout.Label($"{(totalMinutes < 0 ? "-" : "")}{(int)absMinutes}:{Math.Floor((absMinutes % 1) * 60):00}", Styles.rightAlign);
                 }
                 else
                 {

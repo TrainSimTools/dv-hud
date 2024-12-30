@@ -197,8 +197,8 @@ namespace DvMod.HeadsUpDisplay
                     double totalMinutes = TimeSpan.FromSeconds(job.TimeLimit - job.GetTimeOnJob()).TotalMinutes;
 
                     TimeRemainingColor = totalMinutes > 5 ? Color.white : totalMinutes > 1 ? Color.yellow : Color.red;
-
-                    TimeRemaining = $"{(int)totalMinutes}:{Math.Floor((totalMinutes % 1) * 60):00}";
+                    var absMinutes = Math.Abs(totalMinutes);
+                    TimeRemaining = $"{(totalMinutes<0?"-":"")}{(int)absMinutes}:{Math.Floor((absMinutes % 1) * 60):00}";
                 }
                 else
                 {
