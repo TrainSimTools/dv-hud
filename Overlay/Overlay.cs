@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Diagnostics;
+using System.Runtime;
 
 namespace DvMod.HeadsUpDisplay
 {
@@ -68,8 +70,8 @@ namespace DvMod.HeadsUpDisplay
             Main.DebugLog($"Overlay enabled on frame {Time.frameCount}. Fixed update {Time.fixedTime / Time.fixedDeltaTime}");
         }
 
-        private static Rect prevRect = new Rect();
-
+        private static Rect prevRect = Rect.zero;
+        private static bool resetPosition = false;
         public void OnGUI()
         {
             if (!overlayEnabled)
@@ -80,8 +82,25 @@ namespace DvMod.HeadsUpDisplay
             if (!Main.enabled)
                 return;
 
-            if (prevRect == new Rect())
+            if (prevRect == Rect.zero)
+            {
                 prevRect.position = Main.settings.hudPosition;
+            }
+            if (resetPosition)
+            {
+                prevRect = new Rect(Settings.defaultPosition, prevRect.size);
+                resetPosition = false;
+                Main.DebugLog($"reset Overlay position: {prevRect}");
+            }
+            if (prevRect.x < 0)
+            {
+                prevRect.x = 10;
+            }
+            if (prevRect.y < 0)
+            {
+                prevRect.y = 10;
+            }
+
             var newRect = GUILayout.Window(
                 GUIUtility.GetControlID(FocusType.Passive),
                 prevRect,
@@ -89,14 +108,16 @@ namespace DvMod.HeadsUpDisplay
                 "",
                 Styles.noChrome);
             if (newRect.min == prevRect.min)
+            {
                 newRect.height = 0;
+            }
             prevRect = newRect;
             Main.settings.hudPosition = prevRect.position;
         }
 
         public void ResetPosition()
         {
-            prevRect = new Rect();
+            resetPosition = true;
         }
 
         public static void DrawColumn<T>(IEnumerable<T> cells, string? label = null, Func<T, string>? renderer = null, GUIStyle? style = null)
