@@ -82,9 +82,9 @@ namespace DvMod.HeadsUpDisplay
             var frontCar = cars.ElementAt(index - 1);
             var rearCar = cars.ElementAt(index);
             static bool IsFrontCoupledTo(TrainCar car, TrainCar attached) =>
-                car.frontCoupler.springyCJ && car.frontCoupler.coupledTo.train == attached;
+                car.frontCoupler.rigidCJ && car.frontCoupler.coupledTo.train == attached;
             static bool IsRearCoupledTo(TrainCar car, TrainCar attached) =>
-                car.rearCoupler.springyCJ && car.rearCoupler?.coupledTo?.train == attached;
+                car.rearCoupler.rigidCJ && car.rearCoupler?.coupledTo?.train == attached;
 
             (TrainCar car, bool isFront) FindCoupler()
             {
