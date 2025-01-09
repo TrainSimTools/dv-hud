@@ -1,0 +1,3 @@
+[submodule "QuantitiesNet"]
+	path = QuantitiesNet
+	url = https://github.com/mspielberg/QuantitiesNet.git
