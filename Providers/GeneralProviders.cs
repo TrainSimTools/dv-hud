@@ -1,7 +1,7 @@
 using QuantitiesNet;
 using static QuantitiesNet.Units;
 using UnityEngine;
-using System.Linq;
+using DV.Simulation.Cars;
 
 namespace DvMod.HeadsUpDisplay
 {
@@ -21,6 +21,20 @@ namespace DvMod.HeadsUpDisplay
             Registry.Register(new QuantityQueryDataProvider<Dimensions.Velocity>(
                 "Speed",
                 car => new Quantities.Velocity(Mathf.Abs(car.GetForwardSpeed()), MetersPerSecond)));
+
+            Registry.Register(new QuantityQueryDataProvider<Dimensions.Velocity>(
+                "Speed Limit",
+                car =>
+                {
+                    var bogie = car.Bogies[1];
+                    var track = bogie.track;
+                    if (track == null)
+                        return new Quantities.Velocity(0);
+                    var startSpan = bogie.traveller.Span;
+                    var locoDirection = PlayerManager.LastLoco?.GetComponent<SimController>()?.controlsOverrider.Reverser.Value >= 0.5f;
+                    var direction = !locoDirection ^ (bogie.TrackDirectionSign > 0);
+                    return new Quantities.Velocity(TrackFollower.GetSpeedLimit(track, startSpan, direction)??0, KilometersPerHour);
+                }));
 
             Registry.Register(new FloatQueryDataProvider(
                 "Grade",

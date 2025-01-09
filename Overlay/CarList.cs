@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityModManagerNet;
+using DV.ThingTypes;
+using DV.Utils;
+using DV.Simulation.Cars;
+using DV;
 
 namespace DvMod.HeadsUpDisplay
 {
@@ -78,9 +82,9 @@ namespace DvMod.HeadsUpDisplay
             var frontCar = cars.ElementAt(index - 1);
             var rearCar = cars.ElementAt(index);
             static bool IsFrontCoupledTo(TrainCar car, TrainCar attached) =>
-                car.frontCoupler.springyCJ && car.frontCoupler.coupledTo.train == attached;
+                car.frontCoupler.rigidCJ && car.frontCoupler.coupledTo.train == attached;
             static bool IsRearCoupledTo(TrainCar car, TrainCar attached) =>
-                car.rearCoupler.springyCJ && car.rearCoupler?.coupledTo?.train == attached;
+                car.rearCoupler.rigidCJ && car.rearCoupler?.coupledTo?.train == attached;
 
             (TrainCar car, bool isFront) FindCoupler()
             {
@@ -157,7 +161,7 @@ namespace DvMod.HeadsUpDisplay
 
             var brakeModes = new SortedSet<char>();
 
-            if (!CarTypes.IsAnyLocomotiveOrTender(firstCar.carType))
+            if (!CarTypes.IsAnyLocomotiveOrTender(firstCar.carLivery))
                 brakeModes.Add(GetTripleValveState(firstCar));
 
             int i = 0;
@@ -165,7 +169,7 @@ namespace DvMod.HeadsUpDisplay
             {
                 float carStress = car.GetComponent<TrainStress>().derailBuildUp;
                 float? couplerStress = GetCouplerStress(cars, index);
-                Job? job = JobChainController.GetJobOfCar(car);
+                Job? job = SingletonBehaviour<JobsManager>.Instance.GetJobOfCar(car);
                 Track? nextDestination = GetNextDestinationTrack(job, car.logicCar);
                 BrakeSystem brakeSystem = car.brakeSystem;
                 Pressure pipePressure = new Pressure(brakeSystem.brakePipePressure, QuantitiesNet.Units.Bar);
@@ -205,7 +209,7 @@ namespace DvMod.HeadsUpDisplay
                     maxBrakeFactor = brakeSystem.brakingFactor;
                     brakeModes.Clear();
 
-                    if (!CarTypes.IsAnyLocomotiveOrTender(car.carType))
+                    if (!CarTypes.IsAnyLocomotiveOrTender(car.carLivery))
                         brakeModes.Add(GetTripleValveState(car));
                 }
                 else
@@ -224,7 +228,7 @@ namespace DvMod.HeadsUpDisplay
                     if (brakeSystem.brakingFactor > maxBrakeFactor)
                         maxBrakeFactor = brakeSystem.brakingFactor;
 
-                    if (!CarTypes.IsAnyLocomotiveOrTender(car.carType))
+                    if (!CarTypes.IsAnyLocomotiveOrTender(car.carLivery))
                         brakeModes.Add(GetTripleValveState(car));
                 }
                 i++;
@@ -291,6 +295,8 @@ namespace DvMod.HeadsUpDisplay
                 DrawCouplerStress(groups);
             if (trainInfoSettings.showCarJobs)
                 DrawCarJobs(groups);
+            if (trainInfoSettings.showCarJobsTimeRemaining)
+                DrawCarJobsTimeRemaining(groups);
             if (trainInfoSettings.showCarDestinations)
                 DrawCarDestinations(groups);
             if (trainInfoSettings.showCarBrakeStatus)
@@ -302,33 +308,29 @@ namespace DvMod.HeadsUpDisplay
         private const float HueOrange = 30f / 360f;
         private static Color GetCarColor(TrainCar car)
         {
+            if (car == null)
+                return Color.white;
             if (car.derailed)
                 return Color.red;
             if (!car.IsLoco)
                 return Color.white;
-
             var isMultipleUnitCapable = car.TryGetComponent<MultipleUnitModule>(out var muModule);
             var frontMUDisconnected = isMultipleUnitCapable
                 && car.frontCoupler.coupledTo?.train?.carType == car.carType
-                && !muModule.frontCable.IsConnected;
+                && !muModule.FrontCable.IsConnected;
             var rearMUDisconnected = isMultipleUnitCapable
                 && car.rearCoupler.coupledTo?.train?.carType == car.carType
-                && !muModule.rearCable.IsConnected;
+                && !muModule.RearCable.IsConnected;
             var hasDisconnectedMUCable = frontMUDisconnected || rearMUDisconnected;
 
-            var isRunning = car.carType switch
-            {
-                TrainCarType.LocoShunter => car.GetComponent<LocoControllerShunter>().GetEngineRunning(),
-                TrainCarType.LocoDiesel => car.GetComponent<LocoControllerDiesel>().GetEngineRunning(),
-                _ => true,
-            };
+            var isRunning = car.GetComponent<SimController>()?.controlsOverrider?.EngineOnReader?.IsOn ?? true;
 
             return Color.HSVToRGB(HueOrange, hasDisconnectedMUCable ? 1 : 0, isRunning ? 1 : 0.8f);
         }
 
         private static void DrawCarStress(IEnumerable<CarGroup> groups)
         {
-            var derailThreshold = SimManager.instance.derailBuildUpThreshold;
+            var derailThreshold = Globals.G.GameParams.DerailBuildUpThreshold;
 
             GUILayout.Space(Overlay.ColumnSpacing);
             GUILayout.BeginVertical();
@@ -389,6 +391,30 @@ namespace DvMod.HeadsUpDisplay
             {
                 GUI.contentColor = JobColor(group.job);
                 GUILayout.Label(group.job?.ID ?? " ", Styles.noWrap);
+            }
+            GUI.contentColor = Color.white;
+            GUILayout.EndVertical();
+        }
+        private static void DrawCarJobsTimeRemaining(IEnumerable<CarGroup> groups)
+        {
+            GUILayout.Space(Overlay.ColumnSpacing);
+            GUILayout.BeginVertical();
+            GUILayout.Label("Time Left", Styles.noWrap);
+            foreach (CarGroup group in groups)
+            {
+                if (group.job != null && group.job.State == JobState.InProgress)
+                {
+                    double totalMinutes = TimeSpan.FromSeconds(group.job.TimeLimit - group.job.GetTimeOnJob()).TotalMinutes;
+
+                    GUI.contentColor = totalMinutes > 5 ? Color.white : totalMinutes > 1 ? Color.yellow : Color.red;
+
+                    var absMinutes = Math.Abs(totalMinutes);
+                    GUILayout.Label($"{(totalMinutes < 0 ? "-" : "")}{(int)absMinutes}:{Math.Floor((absMinutes % 1) * 60):00}", Styles.rightAlign);
+                }
+                else
+                {
+                    GUILayout.Label(" ", Styles.noWrap);
+                }
             }
             GUI.contentColor = Color.white;
             GUILayout.EndVertical();
