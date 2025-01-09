@@ -29,9 +29,25 @@ namespace DvMod.HeadsUpDisplay
             // Registry.Register(tractiveEffortProvider);
             // Registry.Register(adhesionProvider);
             // Registry.Register(indicatedPowerProvider);
+
+            Registry.Register(new FloatQueryDataProvider(
+                "Tractive effort",
+                car => car.SimController?.drivingForce.generatedForce,
+                f => $"{f / 1000f:0} kN"));
+
+            Registry.Register(new FloatQueryDataProvider(
+                "Adhesion",
+                car => car.SimController?.wheelslipController.TotalForceLimit,
+                f => $"{f / 1000f:0} kN"));
+
+            Registry.Register(new FloatQueryDataProvider(
+                "Power",
+                car => car.SimController?.drivingForce.generatedForce * car.GetAbsSpeed(),
+                f => $"{f / 1000f:0} kW"));
+
             Registry.Register(new FloatQueryDataProvider(
                 "Slip",
-                car => car.GetComponent<SimController>()?.wheelslipController.wheelslip,
+                car => car.SimController?.wheelslipController.wheelslip,
                 f => $"{f:P1}"));
 
             // SteamLocoProviders.Register();

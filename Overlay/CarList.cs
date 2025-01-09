@@ -473,6 +473,7 @@ namespace DvMod.HeadsUpDisplay
         {
             var airBrakeModEnabled = UnityModManager.FindMod("AirBrake")?.Enabled ?? false;
             Overlay.DrawColumn(groups, "Pipe", g => BrakePipeFormatter(g.minBrakePipePressure));
+            Overlay.DrawColumn(groups, "Temp", g => $"{g.cars.Sum(car => car.brakeSystem.heatController.temperature) / g.cars.Count:0} °C");
             if (airBrakeModEnabled)
             {
                 Overlay.DrawColumn(groups, "Res", g => AuxReservoirFormatter(g.minBrakeReservoirPressure));

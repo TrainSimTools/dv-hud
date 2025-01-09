@@ -1,0 +1,88 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>DvMod.HeadsUpDisplay</RootNamespace>
+    <InformationalVersion>1.1.0</InformationalVersion>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="QuantitiesNet\**" />
+    <EmbeddedResource Remove="QuantitiesNet\**" />
+    <None Remove="QuantitiesNet\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="QuantitiesNet\QuantitiesNet\QuantitiesNet.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityModManager\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DV.BrakeSystem">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.BrakeSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DV.PointSet">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.PointSet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DV.ThingTypes">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.ThingTypes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DV.Utils">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityModManager">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="net.smkd.vector3d">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\net.smkd.vector3d.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Daniel\Desktop\trainsimtools\dv-hud-mine\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Daniel\Desktop\trainsimtools\dv-hud-mine\.editorconfig" />
+  </ItemGroup>
+</Project>
